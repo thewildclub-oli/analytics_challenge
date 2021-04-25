@@ -196,6 +196,7 @@ class ChallengeTestCase(TestCase):
                 discount_rate_sum += orderline.discount_rate
         # Calculate average discount rate across all orderlines
         discount_rate_avg_raw = discount_rate_sum / orderlines_sum
+        # Convert to 2dp
         discount_rate_avg = round(discount_rate_avg_raw, 2)
         # Assert test
         self.assertEqual(discount_rate_avg, 0.17)
@@ -248,9 +249,10 @@ class ChallengeTestCase(TestCase):
             orderlines = OrderLine.objects.filter(order_id=order.id)
             # Loop through orderlines
             for orderline in orderlines:
-                # Find vendor commission rate
+                # Find vendor commission rate, for given date
                 vendorcommission_qs = VendorCommissions.objects.filter(
                     Q(vendor_id=order.vendor_id) & Q(date='2021-01-01'))
+                # If the vendor has a commission set on this date
                 if vendorcommission_qs:
                     commission_rate = vendorcommission_qs[0].rate
                     commission_amount = orderline.total_amount * commission_rate
